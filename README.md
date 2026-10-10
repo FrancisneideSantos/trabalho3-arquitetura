@@ -1,307 +1,414 @@
 # API da Biblioteca Escolar
 
-Projeto desenvolvido para a disciplina de Desenvolvimento de Software 2, com o objetivo de implementar uma API REST para o gerenciamento de uma biblioteca escolar.
+## 1. Sobre o projeto
 
-## Descrição
+Este projeto foi desenvolvido para a disciplina de Desenvolvimento de Software 2. O objetivo é criar uma API REST para ajudar no gerenciamento de uma biblioteca escolar.
 
-A API permite o gerenciamento de livros, autores, gêneros, estudantes e empréstimos de uma biblioteca escolar.
+A API permite cadastrar e consultar livros, autores, gêneros literários, estudantes e empréstimos. Também é possível atualizar e excluir registros, buscar livros por título, filtrar por gênero e organizar os resultados usando paginação e ordenação.
 
-O projeto utiliza Node.js e Express para a construção da API REST, Prisma ORM para acesso ao banco de dados e PostgreSQL para armazenamento persistente das informações.
+No Trabalho 2, o foco foi utilizar o PostgreSQL e o Prisma ORM para guardar os dados no banco de dados. No Trabalho 3, o projeto foi reorganizado para separar melhor as responsabilidades de cada parte do código, utilizando uma arquitetura em camadas e padrões de projeto.
 
-A API possui operações de criação, consulta, atualização e exclusão dos principais recursos, além de relacionamentos entre as entidades, filtros, paginação, ordenação e tratamento de erros.
+## 2. Tecnologias utilizadas
 
-## Tecnologias utilizadas
+As principais tecnologias utilizadas no projeto são:
 
-* Node.js
-* Express
-* PostgreSQL
-* Prisma ORM
-* OpenAPI 3.0.3
-* Swagger UI
-* YAML
-* Dotenv
-* Nodemon
+- **Node.js:** permite executar o JavaScript no servidor.
+- **Express:** ajuda a criar as rotas e organizar as requisições da API.
+- **PostgreSQL:** banco de dados utilizado para armazenar as informações.
+- **Prisma ORM:** facilita o acesso ao banco de dados por meio do JavaScript.
+- **OpenAPI:** utilizada para descrever os endpoints, os parâmetros e as respostas da API.
+- **Swagger UI:** ferramenta relacionada à visualização da documentação da API.
+- **YAML:** formato utilizado no arquivo de documentação OpenAPI.
+- **Dotenv:** permite carregar configurações armazenadas em variáveis de ambiente.
+- **Nodemon:** reinicia o servidor automaticamente durante o desenvolvimento.
+- **ESLint:** verifica problemas no código e ajuda a manter um padrão de escrita.
 
-## Recursos da API
+## 3. Recursos da API
 
-A API possui os seguintes recursos principais:
+A API possui cinco recursos principais: livros, autores, gêneros, estudantes e empréstimos.
 
-### Livros
+### 3.1. Livros
 
-Representa os livros disponíveis na biblioteca.
+Representam os livros cadastrados na biblioteca.
 
-Principais campos:
+Entre os principais campos estão:
 
-* id
-* titulo
-* isbn
-* ano
-* exemplares
-* generoId
-* criadoEm
-* atualizadoEm
+- `id`: identificador do livro.
+- `titulo`: título do livro.
+- `isbn`: código de identificação do livro.
+- `ano`: ano de publicação.
+- `exemplares`: quantidade de exemplares disponíveis no cadastro.
+- `generoId`: identificação do gênero relacionado ao livro.
+- `criadoEm`: data de criação do registro.
+- `atualizadoEm`: data da última atualização.
 
-### Autores
+### 3.2. Autores
 
-Representa os autores dos livros.
-
-Principais campos:
-
-* id
-* nome
-* anoNascimento
-
-### Gêneros
-
-Representa os gêneros literários dos livros.
+Representam os autores dos livros.
 
 Principais campos:
 
-* id
-* nome
+- `id`: identificador do autor.
+- `nome`: nome do autor.
+- `anoNascimento`: ano de nascimento do autor.
 
-### Estudantes
+### 3.3. Gêneros
 
-Representa os estudantes cadastrados na biblioteca.
-
-Principais campos:
-
-* id
-* nome
-* matricula
-* email
-* telefone
-* ativo
-
-### Empréstimos
-
-Representa os empréstimos realizados pelos estudantes.
+Representam os gêneros literários dos livros.
 
 Principais campos:
 
-* id
-* livroId
-* estudanteId
-* dataRetirada
-* dataPrevista
-* dataDevolucao
-* status
+- `id`: identificador do gênero.
+- `nome`: nome do gênero literário.
 
-## Relacionamentos
+### 3.4. Estudantes
 
-O banco de dados possui relacionamentos entre as entidades:
+Representam os estudantes cadastrados na biblioteca.
 
-* Um gênero pode possuir vários livros.
-* Um livro pertence a um gênero.
-* Um livro pode possuir vários autores.
-* Um autor pode estar relacionado a vários livros.
-* O relacionamento entre livros e autores é realizado pela tabela `LivroAutor`.
-* Um estudante pode possuir vários empréstimos.
-* Um livro pode possuir vários empréstimos.
+Principais campos:
 
-## Endpoints
+- `id`: identificador do estudante.
+- `nome`: nome do estudante.
+- `matricula`: número de matrícula.
+- `email`: e-mail do estudante.
+- `telefone`: telefone do estudante.
+- `ativo`: indica se o cadastro está ativo.
 
-### Livros
+### 3.5. Empréstimos
 
-| Método | Endpoint      | Descrição                      |
-| ------ | ------------- | ------------------------------ |
-| GET    | `/livros`     | Lista os livros                |
-| GET    | `/livros/:id` | Busca um livro pelo ID         |
-| POST   | `/livros`     | Cadastra um livro              |
-| PUT    | `/livros/:id` | Atualiza um livro              |
-| PATCH  | `/livros/:id` | Atualiza parcialmente um livro |
-| DELETE | `/livros/:id` | Exclui um livro                |
+Representam os empréstimos realizados pelos estudantes.
 
-### Estudantes
+Principais campos:
 
-| Método | Endpoint          | Descrição                          |
-| ------ | ----------------- | ---------------------------------- |
-| GET    | `/estudantes`     | Lista os estudantes                |
-| GET    | `/estudantes/:id` | Busca um estudante pelo ID         |
-| POST   | `/estudantes`     | Cadastra um estudante              |
-| PUT    | `/estudantes/:id` | Atualiza um estudante              |
-| PATCH  | `/estudantes/:id` | Atualiza parcialmente um estudante |
-| DELETE | `/estudantes/:id` | Exclui um estudante                |
+- `id`: identificador do empréstimo.
+- `livroId`: identificação do livro emprestado.
+- `estudanteId`: identificação do estudante.
+- `dataRetirada`: data da retirada do livro.
+- `dataPrevista`: data prevista para devolução.
+- `dataDevolucao`: data em que o livro foi devolvido, quando aplicável.
+- `status`: situação do empréstimo.
 
-### Empréstimos
+## 4. Relacionamentos entre as entidades
 
-| Método | Endpoint           | Descrição                           |
-| ------ | ------------------ | ----------------------------------- |
-| GET    | `/emprestimos`     | Lista os empréstimos                |
-| GET    | `/emprestimos/:id` | Busca um empréstimo pelo ID         |
-| POST   | `/emprestimos`     | Cadastra um empréstimo              |
-| PUT    | `/emprestimos/:id` | Atualiza um empréstimo              |
-| PATCH  | `/emprestimos/:id` | Atualiza parcialmente um empréstimo |
-| DELETE | `/emprestimos/:id` | Exclui um empréstimo                |
+O banco de dados possui seis entidades principais:
 
-### Recurso relacionado
+- `Genero`
+- `Autor`
+- `Livro`
+- `LivroAutor`
+- `Estudante`
+- `Emprestimo`
 
-| Método | Endpoint                      | Descrição                            |
-| ------ | ----------------------------- | ------------------------------------ |
-| GET    | `/estudantes/:id/emprestimos` | Lista os empréstimos de um estudante |
+Os relacionamentos funcionam da seguinte maneira:
 
-## Busca, filtros, paginação e ordenação
+- Um gênero pode estar relacionado a vários livros, mas cada livro pertence a um gênero.
+- Um livro pode ter vários autores, e um autor pode escrever vários livros.
+- A tabela `LivroAutor` faz a ligação entre livros e autores.
+- Um estudante pode ter vários empréstimos.
+- Um livro pode aparecer em vários empréstimos ao longo do tempo.
 
-O endpoint de livros possui recursos adicionais para facilitar as consultas.
+Esses relacionamentos ajudam a organizar os dados e evitam que todas as informações precisem ficar em uma única tabela.
+
+## 5. Endpoints da API
+
+Os endpoints são os caminhos utilizados para acessar os recursos da API.
+
+### 5.1. Livros
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/livros` | Lista os livros. |
+| GET | `/livros/:id` | Busca um livro pelo ID. |
+| POST | `/livros` | Cadastra um livro. |
+| PUT | `/livros/:id` | Atualiza um livro. |
+| PATCH | `/livros/:id` | Atualiza parte dos dados de um livro. |
+| DELETE | `/livros/:id` | Exclui um livro. |
+
+### 5.2. Estudantes
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/estudantes` | Lista os estudantes. |
+| GET | `/estudantes/:id` | Busca um estudante pelo ID. |
+| POST | `/estudantes` | Cadastra um estudante. |
+| PUT | `/estudantes/:id` | Atualiza um estudante. |
+| PATCH | `/estudantes/:id` | Atualiza parte dos dados de um estudante. |
+| DELETE | `/estudantes/:id` | Exclui um estudante. |
+
+### 5.3. Empréstimos
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/emprestimos` | Lista os empréstimos. |
+| GET | `/emprestimos/:id` | Busca um empréstimo pelo ID. |
+| POST | `/emprestimos` | Cadastra um empréstimo. |
+| PUT | `/emprestimos/:id` | Atualiza um empréstimo. |
+| PATCH | `/emprestimos/:id` | Atualiza parte dos dados de um empréstimo. |
+| DELETE | `/emprestimos/:id` | Exclui um empréstimo. |
+
+### 5.4. Empréstimos de um estudante
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/estudantes/:id/emprestimos` | Lista os empréstimos de um estudante. |
+
+## 6. Busca, filtros, paginação e ordenação
+
+A consulta de livros possui recursos que facilitam a busca das informações.
 
 ### Busca por título
 
-É possível buscar livros pelo título:
+Para buscar livros que correspondam a um título, pode ser utilizado:
 
 `GET /livros?titulo=Dom`
 
 ### Filtro por gênero
 
-É possível filtrar os livros pelo gênero:
+Para buscar livros de determinado gênero:
 
 `GET /livros?genero=Romance`
 
 ### Paginação
 
-A consulta de livros permite utilizar os parâmetros `pagina` e `limite`:
+A paginação permite dividir os resultados em partes menores.
+
+Exemplo:
 
 `GET /livros?pagina=1&limite=2`
 
-A resposta possui informações de paginação, como total de registros e quantidade de páginas.
+Nesse exemplo, a consulta solicita a primeira página com até dois livros.
+
+A resposta da listagem inclui os dados encontrados e as informações de paginação.
 
 ### Ordenação
 
-É possível ordenar os resultados utilizando os parâmetros `ordenar` e `direcao`.
+A ordenação permite organizar os resultados por um campo.
 
 Exemplo:
 
 `GET /livros?ordenar=titulo&direcao=desc`
 
-Os parâmetros de busca, filtro, paginação e ordenação podem ser combinados.
+Nesse caso, os resultados são ordenados pelo título em ordem decrescente.
 
-## Dados relacionados
+Os parâmetros de busca, filtro, paginação e ordenação podem ser combinados conforme as opções implementadas na API.
 
-As consultas de livros também podem retornar informações relacionadas, como o gênero e os autores associados ao livro.
+## 7. Validação e tratamento de erros
 
-Isso demonstra o uso dos relacionamentos definidos no banco de dados através do Prisma ORM.
+A API possui middlewares para validar os dados recebidos e tratar erros das requisições.
 
-## Validação de dados
+As validações ajudam a verificar campos obrigatórios e informações necessárias para cadastrar ou atualizar registros.
 
-A API realiza validações dos dados enviados nas requisições.
+Também são tratados erros relacionados a registros inexistentes e a relacionamentos entre entidades.
 
-Entre as validações realizadas estão:
+Alguns códigos HTTP utilizados são:
 
-* campos obrigatórios;
-* existência de registros relacionados;
-* chaves estrangeiras;
-* dados duplicados;
-* recursos não encontrados.
+| Código | Significado |
+|---|---|
+| 200 | Requisição realizada com sucesso. |
+| 201 | Registro criado com sucesso. |
+| 204 | Operação realizada sem conteúdo na resposta, como uma exclusão. |
+| 400 | Dados enviados inválidos. |
+| 404 | Registro não encontrado. |
+| 409 | Conflito com uma regra de integridade do banco de dados. |
+| 500 | Erro interno do servidor. |
 
-Quando uma requisição possui dados inválidos, a API retorna uma resposta HTTP adequada.
+O tratamento de erros ajuda a retornar respostas mais claras quando alguma operação não pode ser concluída.
 
-## Tratamento de erros
+## 8. Banco de dados, Prisma e migrações
 
-A API possui tratamento de erros para situações como:
+O PostgreSQL é utilizado para armazenar os dados de forma persistente. Isso significa que as informações ficam guardadas no banco de dados, em vez de existirem apenas enquanto o servidor está funcionando.
 
-* recurso não encontrado;
-* dados inválidos;
-* conflito de integridade referencial;
-* erro interno do servidor.
+O Prisma ORM facilita a comunicação entre a aplicação e o banco de dados. A estrutura das entidades e dos relacionamentos é definida no arquivo `prisma/schema.prisma`.
 
-### Recurso não encontrado
+As migrações permitem registrar e aplicar mudanças na estrutura do banco. Durante o desenvolvimento, uma das mudanças realizadas foi a inclusão do campo `telefone` na entidade de estudantes.
 
-Status:
+O projeto também possui um seed, utilizado para inserir dados iniciais de exemplo e facilitar os testes.
 
-`404 Not Found`
+## 9. Trabalho 3: arquitetura em camadas
 
-### Conflito de integridade
+No Trabalho 3, o código foi reorganizado em camadas para deixar cada parte responsável por uma função específica.
 
-Quando um registro não pode ser excluído porque está sendo utilizado por outro registro relacionado, a API retorna:
+Essa separação facilita a leitura, a manutenção e a alteração do projeto.
 
-`409 Conflict`
+### 9.1. Routes — rotas
 
-### Erro interno
+As rotas definem os caminhos da API e os métodos HTTP disponíveis. Elas encaminham cada requisição para o controller responsável.
 
-Status:
+### 9.2. Controllers — controladores
 
-`500 Internal Server Error`
+Os controllers recebem as requisições, chamam os serviços necessários e devolvem as respostas HTTP.
 
-## Códigos HTTP utilizados
+A ideia é evitar que eles concentrem todas as regras e operações do sistema.
 
-| Código | Significado                    |
-| ------ | ------------------------------ |
-| 200    | Operação realizada com sucesso |
-| 201    | Recurso criado com sucesso     |
-| 204    | Recurso excluído com sucesso   |
-| 400    | Dados inválidos                |
-| 404    | Recurso não encontrado         |
-| 409    | Conflito                       |
-| 500    | Erro interno do servidor       |
+### 9.3. Services — serviços
 
-## Banco de dados
+Os services organizam as operações da aplicação e fazem a ligação entre os controllers e os repositórios.
 
-O projeto utiliza PostgreSQL como banco de dados e Prisma ORM para realizar o acesso aos dados.
+Essa camada ajuda a separar o funcionamento da aplicação do código que acessa diretamente o banco de dados.
 
-O banco possui seis entidades principais:
+### 9.4. Repositories — repositórios
 
-* `Genero`
-* `Autor`
-* `Livro`
-* `LivroAutor`
-* `Estudante`
-* `Emprestimo`
+Os repositories são responsáveis pelo acesso aos dados usando o Prisma ORM.
 
-As informações são armazenadas de forma persistente no banco de dados.
+Com essa organização, as consultas e operações no banco ficam separadas dos controllers e dos services.
 
-## Prisma e migrações
+### 9.5. Middlewares
 
-O Prisma é utilizado para definir o modelo do banco de dados e realizar as migrações.
+Os middlewares executam tarefas durante o processamento das requisições.
 
-A primeira migração foi utilizada para criar a estrutura inicial do banco.
+Neste projeto, são utilizados para validar os dados recebidos e tratar erros.
 
-Também foi realizada uma segunda migração para evoluir a estrutura do banco, adicionando o campo `telefone` à tabela de estudantes.
+### 9.6. Config e container
 
-## Seed
+O arquivo `src/config/container.js` organiza a criação e a disponibilização das dependências utilizadas pelos controllers e serviços.
 
-O projeto possui um arquivo de seed para inserir dados iniciais no banco de dados.
+Isso evita que cada parte da aplicação precise criar todas as suas dependências separadamente.
 
-O seed permite criar dados de exemplo para livros, autores, gêneros, estudantes e empréstimos, facilitando os testes da API.
+### 9.7. Prisma
 
-## Configuração do ambiente
+O Prisma continua responsável pela comunicação com o banco de dados. O acesso ao banco é realizado pelos repositórios, mantendo essa responsabilidade concentrada na camada de persistência.
 
-É necessário ter instalado:
+## 10. Padrões de projeto utilizados
 
-* Node.js
-* PostgreSQL
+Padrões de projeto são formas conhecidas de organizar o código para resolver problemas comuns no desenvolvimento de software.
 
-As informações de conexão com o banco de dados são armazenadas através da variável de ambiente `DATABASE_URL`.
+Neste trabalho, foram utilizados três padrões.
 
-O arquivo `.env` não deve ser enviado ao repositório.
+### 10.1. Repository
 
-O projeto possui um arquivo `.env.example` como modelo de configuração.
+O padrão Repository separa o acesso ao banco de dados do restante da aplicação.
 
-Exemplo:
+No projeto, os arquivos da pasta `src/repositories` concentram as operações realizadas com o Prisma.
 
-```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/biblioteca2"
+Essa separação facilita a manutenção, pois as consultas ao banco ficam em um local específico.
+
+### 10.2. Injeção de Dependência
+
+A Injeção de Dependência permite que um componente receba as dependências de que precisa, em vez de criar tudo diretamente dentro dele.
+
+No projeto, o arquivo `src/config/container.js` organiza as instâncias dos repositórios e serviços que são utilizadas pelos controllers.
+
+Isso ajuda a diminuir o acoplamento entre as partes da aplicação e facilita futuras alterações.
+
+### 10.3. Factory
+
+O padrão Factory utiliza funções responsáveis pela criação de objetos ou instâncias.
+
+Neste projeto, as funções de criação dos repositórios e serviços ajudam a organizar a construção dessas instâncias e suas dependências.
+
+O uso desse padrão complementa a organização do container e da injeção de dependência.
+
+## 11. Fluxo de uma requisição
+
+O fluxo de uma requisição acontece da seguinte forma:
+
+1. O cliente envia uma requisição para um endpoint da API.
+2. A rota identifica o caminho e encaminha a requisição.
+3. Os middlewares executam as validações necessárias, quando aplicáveis.
+4. O controller recebe a requisição e chama o serviço responsável.
+5. O serviço realiza a operação utilizando o repositório.
+6. O repositório acessa o banco de dados por meio do Prisma.
+7. O resultado retorna pelas camadas até o controller, que envia a resposta ao cliente.
+
+Esse fluxo ajuda a entender como as partes do projeto trabalham juntas.
+
+## 12. Documentação da arquitetura e ADRs
+
+Além deste README, o projeto possui arquivos específicos para explicar as decisões tomadas durante a organização do código.
+
+O arquivo `ARQUITETURA.md` apresenta:
+
+- o diagrama da arquitetura;
+- as responsabilidades das camadas;
+- o fluxo de uma requisição;
+- as justificativas para os padrões de projeto utilizados.
+
+O projeto também possui dois ADRs (*Architecture Decision Records*), que são registros das decisões de arquitetura.
+
+Os arquivos são:
+
+- `docs/adr/0001-arquitetura-em-camadas.md`
+- `docs/adr/0002-injecao-de-dependencia.md`
+
+O primeiro registra a decisão de organizar a aplicação em camadas. O segundo registra a decisão de utilizar injeção de dependência.
+
+## 13. Estrutura do projeto
+
+A estrutura principal do projeto está organizada da seguinte forma:
+
+```text
+Trilha3/
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.js
+├── docs/
+│   └── adr/
+│       ├── 0001-arquitetura-em-camadas.md
+│       └── 0002-injecao-de-dependencia.md
+├── src/
+│   ├── config/
+│   │   └── container.js
+│   ├── controllers/
+│   ├── docs/
+│   │   └── openapi.yaml
+│   ├── middlewares/
+│   ├── repositories/
+│   ├── routes/
+│   ├── services/
+│   └── app.js
+├── ARQUITETURA.md
+├── README.md
+├── eslint.config.js
+├── package.json
+└── package-lock.json
 ```
 
-## Como instalar o projeto
+A pasta `prisma` contém a definição do banco de dados, as migrações e o seed.
 
-Após clonar ou baixar o projeto, entre na pasta:
+A pasta `src` contém o código principal da API, separado de acordo com as responsabilidades de cada camada.
 
-```bash
-cd trabalho2
-```
+A pasta `docs/adr` guarda os registros das decisões de arquitetura.
 
-Instale as dependências:
+O arquivo `ARQUITETURA.md` explica com mais detalhes como as camadas se relacionam.
+
+## 14. Como configurar e executar o projeto
+
+Para executar o projeto em outro computador, é necessário ter o Node.js e o PostgreSQL instalados.
+
+### Passo 1 — Instalar as dependências
+
+Abra o terminal na pasta do projeto e execute:
 
 ```bash
 npm install
 ```
 
-Configure o arquivo `.env` com a conexão do PostgreSQL.
+### Passo 2 — Configurar o banco de dados
 
-Depois, execute as migrações do Prisma:
+Crie ou utilize um banco PostgreSQL e configure a variável `DATABASE_URL` no arquivo `.env`.
+
+Exemplo de formato:
+
+```env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/biblioteca2"
+```
+
+Substitua os valores de exemplo pelas informações corretas do seu ambiente.
+
+O arquivo `.env` contém configurações locais e não deve ser enviado ao GitHub. O arquivo `.env.example` pode ser utilizado como modelo, caso esteja disponível no projeto.
+
+### Passo 3 — Aplicar as migrações
+
+Se o banco estiver sendo configurado pela primeira vez, execute:
 
 ```bash
 npx prisma migrate dev
 ```
+
+Esse comando aplica as migrações pendentes. Em um banco que já está configurado, não é necessário recriar a estrutura sem motivo.
+
+### Passo 4 — Inserir os dados iniciais
 
 Para executar o seed, utilize:
 
@@ -309,56 +416,66 @@ Para executar o seed, utilize:
 npx prisma db seed
 ```
 
-## Como executar
+Esse comando insere os dados iniciais definidos no projeto. Evite executá-lo novamente sem verificar como o seed está configurado, para não duplicar registros.
 
-Para iniciar a API em modo de desenvolvimento:
+### Passo 5 — Iniciar a API
+
+Execute:
 
 ```bash
 npm run dev
 ```
 
-A API estará disponível em:
+A API utiliza a porta 3000 por padrão.
+
+Endereço local:
 
 `http://localhost:3000`
 
-## Documentação OpenAPI
+## 15. Verificação do código
 
-A API possui documentação utilizando OpenAPI.
+O ESLint é utilizado para verificar problemas de escrita e organização do código JavaScript.
 
-O arquivo de documentação está disponível no projeto e descreve os endpoints, parâmetros, requisições e respostas da API.
+Para executar a verificação, utilize:
 
-## Testes
+```bash
+npx eslint src
+```
 
-Os endpoints da API foram testados utilizando o Insomnia.
+A verificação deve terminar sem apresentar erros de lint.
 
-Foram realizados testes envolvendo:
+## 16. Documentação OpenAPI
 
-* consultas;
-* criação de registros;
-* atualização de registros;
-* exclusão de registros;
-* paginação;
-* filtros;
-* ordenação;
-* relacionamentos;
-* validação de chaves estrangeiras;
-* recursos não encontrados;
-* conflitos de integridade referencial.
+O arquivo `src/docs/openapi.yaml` contém a documentação OpenAPI da API.
 
-## Estrutura do projeto
+Nele estão descritos os endpoints, os parâmetros e as respostas documentadas para as operações disponíveis.
 
-A estrutura principal do projeto está organizada em pastas de acordo com as responsabilidades da aplicação, incluindo:
+A documentação ajuda a entender como utilizar a API sem precisar analisar todo o código-fonte.
 
-* `src`: código principal da aplicação;
-* `routes`: definição das rotas;
-* `controllers`: controle das requisições;
-* `repositories`: acesso aos dados através do Prisma;
-* `middlewares`: tratamento de erros e validações;
-* `prisma`: schema, migrações e seed;
-* `docs`: documentação da API.
+## 17. Testes realizados
 
-## Considerações finais
+Durante o desenvolvimento, os endpoints foram testados utilizando o Insomnia.
 
-O projeto implementa uma API REST para o gerenciamento de uma biblioteca escolar, utilizando PostgreSQL e Prisma ORM.
+Foram verificadas operações como:
 
-A aplicação contempla operações CRUD, relacionamentos entre entidades, persistência dos dados, migrações, seed, filtros, paginação, ordenação, validação de chaves estrangeiras e tratamento de erros HTTP.
+- consulta de livros, estudantes e empréstimos;
+- cadastro de registros;
+- atualização completa e parcial;
+- exclusão de registros;
+- busca e filtros de livros;
+- paginação e ordenação;
+- consulta de dados relacionados;
+- busca de registros inexistentes;
+- validação de relacionamentos e tratamento de erros.
+
+Esses testes ajudaram a verificar o funcionamento da API e a identificar problemas durante o desenvolvimento.
+
+## 18. Considerações finais
+
+O projeto começou com a implementação de uma API REST para gerenciar uma biblioteca escolar. Ao longo do desenvolvimento, foram utilizados o PostgreSQL e o Prisma ORM para armazenar e consultar os dados.
+
+No Trabalho 3, o foco foi organizar melhor o código, separando as responsabilidades em camadas e utilizando os padrões Repository, Injeção de Dependência e Factory.
+
+Com essa organização, o projeto fica mais fácil de entender, manter e modificar. A separação das responsabilidades também ajuda a evitar que toda a lógica da aplicação fique concentrada em um único arquivo.
+
+Este trabalho permitiu praticar a criação de APIs, o uso de banco de dados, a organização do código e a aplicação de conceitos de arquitetura de software.

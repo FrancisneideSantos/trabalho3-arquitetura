@@ -1,162 +1,114 @@
-const { emprestimos, livros, estudantes } = require('../data/db-memoria')
 
-let proximoId = 2
+const { emprestimosService } = require('../config/container')
 
-const listarEmprestimos = (req, res) => {
-  res.status(200).json(emprestimos)
+const responderErro = (res, error, next) => {
+  if (error.code === 'P2025') {
+    return res.status(404).json({
+      erro: {
+        codigo: 'RECURSO_NAO_ENCONTRADO',
+        mensagem: 'Empréstimo não encontrado'
+      }
+    })
+  }
+
+  return next(error)
 }
 
-const buscarEmprestimo = (req, res) => {
-  const id = parseInt(req.params.id)
-  const emprestimo = emprestimos.find(item => item.id === id)
-
-  if (!emprestimo) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Empréstimo com id ${id} não encontrado`
-      }
-    })
+const listarEmprestimos = async (req, res, next) => {
+  try {
+    const emprestimos = await emprestimosService.listar()
+    return res.status(200).json(emprestimos)
+  } catch (error) {
+    return responderErro(res, error, next)
   }
-
-  res.status(200).json(emprestimo)
 }
 
-const criarEmprestimo = (req, res) => {
-  const { livroId, estudanteId, dataEmprestimo } = req.body
+const buscarEmprestimo = async (req, res, next) => {
+  try {
+    const id = Number.parseInt(req.params.id, 10)
+    const emprestimo = await emprestimosService.buscarPorId(id)
 
-  if (!livroId || !estudanteId || !dataEmprestimo) {
-    return res.status(400).json({
-      erro: {
-        codigo: 'DADOS_INVALIDOS',
-        mensagem: 'livroId, estudanteId e dataEmprestimo são obrigatórios'
-      }
-    })
+    if (!emprestimo) {
+      return res.status(404).json({
+        erro: {
+          codigo: 'RECURSO_NAO_ENCONTRADO',
+          mensagem: `Empréstimo com id ${id} não encontrado`
+        }
+      })
+    }
+
+    return res.status(200).json(emprestimo)
+  } catch (error) {
+    return responderErro(res, error, next)
   }
-
-  const livro = livros.find(item => item.id === livroId)
-  const estudante = estudantes.find(item => item.id === estudanteId)
-
-  if (!livro) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Livro com id ${livroId} não encontrado`
-      }
-    })
-  }
-
-  if (!estudante) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Estudante com id ${estudanteId} não encontrado`
-      }
-    })
-  }
-
-  const novoEmprestimo = {
-    id: proximoId++,
-    livroId,
-    estudanteId,
-    dataEmprestimo
-  }
-
-  emprestimos.push(novoEmprestimo)
-
-  res.status(201).json(novoEmprestimo)
 }
 
-const atualizarEmprestimo = (req, res) => {
-  const id = parseInt(req.params.id)
-  const emprestimo = emprestimos.find(item => item.id === id)
-
-  if (!emprestimo) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Empréstimo com id ${id} não encontrado`
-      }
-    })
+const criarEmprestimo = async (req, res, next) => {
+  try {
+    const novoEmprestimo = await emprestimosService.criar(req.body)
+    return res.status(201).json(novoEmprestimo)
+  } catch (error) {
+    return responderErro(res, error, next)
   }
-
-  const { livroId, estudanteId, dataEmprestimo } = req.body
-
-  if (!livroId || !estudanteId || !dataEmprestimo) {
-    return res.status(400).json({
-      erro: {
-        codigo: 'DADOS_INVALIDOS',
-        mensagem: 'livroId, estudanteId e dataEmprestimo são obrigatórios'
-      }
-    })
-  }
-
-  emprestimo.livroId = livroId
-  emprestimo.estudanteId = estudanteId
-  emprestimo.dataEmprestimo = dataEmprestimo
-
-  res.status(200).json(emprestimo)
 }
 
-const atualizarParcialmenteEmprestimo = (req, res) => {
-  const id = parseInt(req.params.id)
-  const emprestimo = emprestimos.find(item => item.id === id)
+const atualizarEmprestimo = async (req, res, next) => {
+  try {
+    const id = Number.parseInt(req.params.id, 10)
+    const emprestimo = await emprestimosService.atualizar(id, req.body)
 
-  if (!emprestimo) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Empréstimo com id ${id} não encontrado`
-      }
-    })
+    return res.status(200).json(emprestimo)
+  } catch (error) {
+    return responderErro(res, error, next)
   }
-
-  const { livroId, estudanteId, dataEmprestimo } = req.body
-
-  if (livroId !== undefined) emprestimo.livroId = livroId
-  if (estudanteId !== undefined) emprestimo.estudanteId = estudanteId
-  if (dataEmprestimo !== undefined) emprestimo.dataEmprestimo = dataEmprestimo
-
-  res.status(200).json(emprestimo)
 }
 
-const excluirEmprestimo = (req, res) => {
-  const id = parseInt(req.params.id)
-  const index = emprestimos.findIndex(item => item.id === id)
+const atualizarParcialmenteEmprestimo = async (req, res, next) => {
+  try {
+    const id = Number.parseInt(req.params.id, 10)
+    const emprestimo = await emprestimosService.atualizarParcialmente(
+      id,
+      req.body
+    )
 
-  if (index === -1) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Empréstimo com id ${id} não encontrado`
-      }
-    })
+    return res.status(200).json(emprestimo)
+  } catch (error) {
+    return responderErro(res, error, next)
   }
-
-  emprestimos.splice(index, 1)
-
-  res.status(204).send()
 }
 
-const listarEmprestimosDoEstudante = (req, res) => {
-  const estudanteId = parseInt(req.params.id)
+const excluirEmprestimo = async (req, res, next) => {
+  try {
+    const id = Number.parseInt(req.params.id, 10)
+    await emprestimosService.remover(id)
 
-  const estudante = estudantes.find(item => item.id === estudanteId)
-
-  if (!estudante) {
-    return res.status(404).json({
-      erro: {
-        codigo: 'RECURSO_NAO_ENCONTRADO',
-        mensagem: `Estudante com id ${estudanteId} não encontrado`
-      }
-    })
+    return res.status(204).send()
+  } catch (error) {
+    return responderErro(res, error, next)
   }
+}
 
-  const resultado = emprestimos.filter(
-    emprestimo => emprestimo.estudanteId === estudanteId
-  )
+const listarEmprestimosDoEstudante = async (req, res, next) => {
+  try {
+    const estudanteId = Number.parseInt(req.params.id, 10)
 
-  res.status(200).json(resultado)
+    const emprestimos = await emprestimosService.listarPorEstudante(
+      estudanteId
+    )
+
+    if (emprestimos === null) {
+      return res.status(404).json({
+        erro: {
+          codigo: 'RECURSO_NAO_ENCONTRADO',
+          mensagem: `Estudante com id ${estudanteId} não encontrado`
+        }
+      })
+    }
+
+    return res.status(200).json(emprestimos)
+  } catch (error) {
+    return responderErro(res, error, next)
+  }
 }
 
 module.exports = {
